@@ -14,7 +14,9 @@ teste =
       ("Ana", "O Segredo de Luiza", ["negocios", "empreendedorismo"], fromGregorian 2024 11 10),
       ("Paulo", "O Pequeno Principe", ["infantil", "filosofia"], fromGregorian 2024 11 20),
       ("Mauro", "O Capital", ["economia", "marxismo"], fromGregorian 2024 11 05),
-      ("Francisco", "O Auto da Compadecida", ["teatro", "comedia"], fromGregorian 2024 11 01)
+      ("Francisco", "O Auto da Compadecida", ["teatro", "comedia"], fromGregorian 2024 11 01),
+      ("Ana", "O Principe", ["politica", "filosofia"], fromGregorian 2024 11 10),
+      ("Paulo", "O Senhor dos Aneis", ["fantasia", "aventura"], fromGregorian 2024 11 15)
     ]
 
 -- Máximo de livros que uma pessoa pode tomar emprestado
@@ -110,5 +112,5 @@ main = do
     print novoTeste
 
     putStrLn "\nDevolvendo livro 'O Segredo de Luiza' para Ana:"
-    let atualizadoTeste = devolveLivro novoTeste "Ana" "O Segredo de Luiza"
+    let atualizadoTeste = devolveLivro novoTeste "Ana" "O Segredo de Luiza" hoje
     print atualizadoTeste
