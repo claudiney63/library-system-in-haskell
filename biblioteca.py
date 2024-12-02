@@ -14,52 +14,63 @@ teste: BancodeDados = [
     ("Paulo", "O Pequeno Principe", ["infantil", "filosofia"], date(2024, 11, 20)),
     ("Mauro", "O Capital", ["economia", "marxismo"], date(2024, 11, 5)),
     ("Francisco", "O Auto da Compadecida", ["teatro", "comedia"], date(2024, 11, 1)),
+    ("Ana", "O Principe", ["politica", "filosofia"], date(2024, 11, 10)),
+    ("Paulo", "O Senhor dos Aneis", ["fantasia", "aventura"], date(2024, 11, 15)),
 ]
 
 # Máximo de livros que uma pessoa pode tomar emprestado
-MAX_LIVROS = 3
+max_livros = 3
 
 # Funções de Consulta
 
 # 1. Livros emprestados por uma pessoa
-def livros_emprestados(banco: BancodeDados, pessoa: Pessoa) -> list[Livro]:
-    return [livro for p, livro, _, _ in banco if p == pessoa]
+def livros_emprestados(bd: BancodeDados, pessoa: Pessoa) -> list[Livro]:
+    return [livro for p, livro, _, _ in bd if p == pessoa]
 
 # 2. Todas as pessoas que pegaram um determinado livro
-def quem_pegou_livro(banco: BancodeDados, livro: Livro) -> list[Pessoa]:
-    return [p for p, l, _, _ in banco if l == livro]
+def quem_pegou_livro(bd: BancodeDados, livro: Livro) -> list[Pessoa]:
+    return [pessoa for pessoa, l, _, _ in bd if l == livro]
 
 # 3. Verificar se um livro está emprestado
-def esta_emprestado(banco: BancodeDados, livro: Livro) -> bool:
-    return any(l == livro for _, l, _, _ in banco)
+def esta_emprestado(bd: BancodeDados, livro: Livro) -> bool:
+    return any(l == livro for _, l, _, _ in bd)
 
 # 4. Quantidade de livros emprestados por uma pessoa
-def quantidade_emprestimos(banco: BancodeDados, pessoa: Pessoa) -> int:
-    return sum(1 for p, _, _, _ in banco if p == pessoa)
+def quantidade_emprestimos(bd: BancodeDados, pessoa: Pessoa) -> int:
+    return sum(1 for p, _, _, _ in bd if p == pessoa)
 
 # Funções de Atualização
 
 # 5. Emprestar um livro
 def toma_emprestado(
-    banco: BancodeDados, pessoa: Pessoa, livro: Livro, palavras: list[PalavraChave], data: DataEmprestimo
+    bd: BancodeDados, pessoa: Pessoa, livro: Livro, palavras: list[PalavraChave], data_emprestimo: DataEmprestimo
 ) -> BancodeDados:
-    if quantidade_emprestimos(banco, pessoa) >= MAX_LIVROS:
+    if quantidade_emprestimos(bd, pessoa) >= max_livros:
         raise ValueError("Limite de empréstimos atingido!")
-    return [(pessoa, livro, palavras, data)] + banco
+    return [(pessoa, livro, palavras, data_emprestimo)] + bd
 
 # 6. Devolver um livro
-def devolve_livro(banco: BancodeDados, pessoa: Pessoa, livro: Livro) -> BancodeDados:
-    if not any(p == pessoa and l == livro for p, l, _, _ in banco):
+def devolve_livro(
+    bd: BancodeDados, pessoa: Pessoa, livro: Livro, hoje: DataEmprestimo
+) -> BancodeDados:
+    if not bd:
         raise ValueError("Nenhum livro emprestado para devolver.")
-    return [(p, l, palavras, data) for p, l, palavras, data in banco if not (p == pessoa and l == livro)]
+    restante = []
+    for p, l, palavras, data_emp in bd:
+        if p == pessoa and l == livro:
+            if hoje > data_emp:
+                raise ValueError("O livro está sendo devolvido após o limite do empréstimo!")
+            continue
+        restante.append((p, l, palavras, data_emp))
+    return restante
 
 # 7. Buscar livros por palavra-chave
-def busca_por_palavra_chave(banco: BancodeDados, palavra: PalavraChave) -> list[Livro]:
-    return [livro for _, livro, palavras, _ in banco if palavra in palavras]
+def busca_por_palavra_chave(bd: BancodeDados, palavra: PalavraChave) -> list[Livro]:
+    return [livro for _, livro, palavras, _ in bd if palavra in palavras]
 
 # 8. Verificar livros vencidos
-def livros_vencidos(banco: BancodeDados, hoje: DataEmprestimo) -> list[tuple[Pessoa, Livro]]:
-    return [(p, livro) for p, livro, _, data in banco if data < hoje]
+def livros_vencidos(bd: BancodeDados, hoje: DataEmprestimo) -> list[tuple[Pessoa, Livro]]:
+    return [(pessoa, livro) for pessoa, livro, _, data_emp in bd if data_emp < hoje]
 
 # Programa Principal para Testes
 if __name__ == "__main__":
@@ -83,10 +94,10 @@ if __name__ == "__main__":
     print("\nLivros vencidos até hoje:")
     print(livros_vencidos(teste, hoje))
 
-    print("\nAdicionando novo emprestimo para Ana:")
+    print("\nAdicionando novo empréstimo para Ana:")
     novo_teste = toma_emprestado(teste, "Ana", "Clean Code", ["programacao", "engenharia"], date(2024, 12, 1))
     print(novo_teste)
 
     print("\nDevolvendo livro 'O Segredo de Luiza' para Ana:")
-    atualizado_teste = devolve_livro(novo_teste, "Ana", "O Segredo de Luiza")
+    atualizado_teste = devolve_livro(novo_teste, "Ana", "O Segredo de Luiza", hoje)
     print(atualizado_teste)
