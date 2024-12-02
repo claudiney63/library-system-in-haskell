@@ -74,7 +74,7 @@ def livros_vencidos(bd: BancodeDados, hoje: DataEmprestimo) -> list[tuple[Pessoa
 
 # Programa Principal para Testes
 if __name__ == "__main__":
-    hoje = date(2024, 11, 25)  # Data atual simulada
+    hoje = date(2024, 12, 2)  # Data atual simulada
 
     print("Livros emprestados por Paulo:")
     print(livros_emprestados(teste, "Paulo"))

@@ -88,7 +88,7 @@ livrosVencidos ((pessoa, livro, _, dataEmp):resto) hoje
 -- Programa Principal para Testes
 main :: IO ()
 main = do
-    let hoje = fromGregorian 2024 11 25 -- Data atual simulada
+    let hoje = fromGregorian 2024 12 2 -- Data atual simulada
     putStrLn "Livros emprestados por Paulo:"
     print $ livrosEmprestados teste "Paulo"
 
